@@ -3,18 +3,33 @@ var app = angular.module('app', []);
 app.controller('AppCtrl', function($scope, $http) {
     $scope.refresh = function() {
         $http.get('/contactlist').success(function(response) {
-            console.log('i got the data i requested');
             $scope.contacts = response;
-            $scope.contact = '';
+            $scope.newContact = '';
         });
     }
+
     $scope.refresh();
-    console.log('eeee');
+
     $scope.addContact = function() {
-        console.log($scope.contact);
-        $http.post('/contactlist', $scope.contact).success(function(response) {
-            console.log(response);
+        $http.post('/contactlist', $scope.newContact).success(function(response) {
             $scope.refresh();
         });
     };
+    $scope.removeContact = function(id) {
+        $http.delete('/contactlist/' + id).success(function(response) {
+            console.log('deleteResponse:  ', response);
+            $scope.refresh();
+        });
+    };
+    $scope.editContact = function (id) {
+        console.log(id);
+        $http.get('/contactlist/' + id).success(function(response) {
+            $scope.newContact = response;
+        })
+    };
+    $scope.updateContact = function () {
+        $http.put('/contactlist/' + $scope.newContact._id, $scope.newContact).success(function (response) {
+            $scope.refresh();
+        })
+    }
 });
